@@ -2,22 +2,20 @@
 #include <nftables/libnftables.h>
 #include <jansson.h>
 
-enum nft_nat_types
-{
-    NFT_SNAT = 0,
-    NFT_DNAT,
-    NFT_MASQ,
+enum nft_nat_types {
+	NFT_SNAT = 0,
+	NFT_DNAT,
+	NFT_MASQ,
 };
 
 
-#define NFT_POLICY_ACCEPT   "accept"
-#define NFT_POLICY_DROP     "drop" 
+#define NFT_POLICY_ACCEPT "accept"
+#define NFT_POLICY_DROP "drop"
 
-enum nft_cmds
-{
-    NFT_CMD_ADD = 0,
-    NFT_CMD_DELETE,
-    NFT_CMD_REPLACE,
+enum nft_cmds {
+	NFT_CMD_ADD = 0,
+	NFT_CMD_DELETE,
+	NFT_CMD_REPLACE,
 };
 
 #define NFT_SRC_ADDR 0
@@ -28,7 +26,7 @@ enum nft_cmds
 
 /**
  *  Chain context.
- *  
+ *
  *  @property priority (uint8_t) chain priority.
  *  @property family   (const char*) nft IP family (ip, ip6)
  *  @property table    (const char*) nft table name.
@@ -38,39 +36,36 @@ enum nft_cmds
  *  @property policy   (const char*) nft chain policy.
  *  @see man page libnftables-json(5)
  */
-typedef struct nft_json_chain_ctx
-{
-    uint32_t priority;
-    const char *family, *table, *chain, *type, *hook, *policy;
+typedef struct nft_json_chain_ctx {
+	uint32_t priority;
+	const char *family, *table, *chain, *type, *hook, *policy;
 } chain_ctx;
 
 /**
  *  Ports context.
- *  
+ *
  *  @property port_type  (uint8_t) define source | destination port.
  *  @property port_begin (int) begin port.
  *  @property port_end   (int) end port.
  *  @property protocol   (const char*) tcp, udp protocol.
  */
-typedef struct nft_json_ports_ctx
-{
-    uint8_t port_type;
-    int port_begin, port_end;
-    const char *protocol;
+typedef struct nft_json_ports_ctx {
+	uint8_t port_type;
+	int port_begin, port_end;
+	const char *protocol;
 } ports_ctx;
 
 /**
  *  Address context.
- * 
+ *
  *  @property addr_type (uint8_t) define source | destinasion address.
  *  @property family    (const char*) nft IP family (ip, ip6)
  *  @property addr      (const char*) IP address.
- */ 
-typedef struct nft_json_addr_ctx
-{
-    uint8_t addr_type;
-    const char *family, *addr;
-    int mask_len;
+ */
+typedef struct nft_json_addr_ctx {
+	uint8_t addr_type;
+	const char *family, *addr;
+	int mask_len;
 } addr_ctx;
 
 /**
@@ -84,16 +79,15 @@ typedef struct nft_json_addr_ctx
  *  @property dports_ctx (ports_ctx) destination ports context.
  *  @see nft_json_addr_ctx, nft_json_ports_ctx.
  */
-typedef struct nft_json_policy_ctx
-{
-    const char *policy, *iifname;
-    addr_ctx saddr_ctx, daddr_ctx;
-    ports_ctx sport_ctx, dport_ctx;
+typedef struct nft_json_policy_ctx {
+	const char *policy, *iifname;
+	addr_ctx saddr_ctx, daddr_ctx;
+	ports_ctx sport_ctx, dport_ctx;
 } policy_ctx;
 
 /**
  *  NAT context.
- * 
+ *
  *  @property nat_type  (nft_nat_types) NAT type.
  *  @property oif       (const char*) out interface name.
  *  @property iifname   (const char*) in interface name.
@@ -102,12 +96,11 @@ typedef struct nft_json_policy_ctx
  *  @property daddr_ctx (addr_ctx) destination address context.
  *  @see nft_json_addr_ctx, nft_json_ports_ctx.
  */
-typedef struct nft_json_nat_ctx
-{
-    uint8_t nat_type;
-    const char *oif, *iifname, *nat_addr;
-    addr_ctx saddr_ctx;
-    addr_ctx daddr_ctx;
+typedef struct nft_json_nat_ctx {
+	uint8_t nat_type;
+	const char *oif, *iifname, *nat_addr;
+	addr_ctx saddr_ctx;
+	addr_ctx daddr_ctx;
 } nat_ctx;
 
 /**
@@ -118,15 +111,14 @@ typedef struct nft_json_nat_ctx
  *  @property ch_ctx    (chain_ctx) chain context.
  *  @see nft_json_addr_ctx, nft_json_ports_ctx.
  */
-typedef struct nft_json_rule_ctx
-{
-    uint8_t nft_cmd, handle;
-    chain_ctx ch_ctx;
+typedef struct nft_json_rule_ctx {
+	uint8_t nft_cmd, handle;
+	chain_ctx ch_ctx;
 } rule_ctx;
 
 /**
  *  Print error message.
- * 
+ *
  *  @param  err_msg - error message.
  *  @return NULL
  */
@@ -134,14 +126,14 @@ json_t *pfail(const char *err_msg);
 
 /**
  *  Print error message and exit with code: -1.
- * 
+ *
  *  @param  err_msg - error message.
  */
 void perror(const char *err_msg);
 
 /**
  *  Print nft output.
- * 
+ *
  *  @param  nft - nft context.
  *  @return 0 if success or -1 if output NULL.
  */
@@ -149,28 +141,28 @@ int nft_get_output(struct nft_ctx *nft);
 
 /**
  *  Build nft JSON command for add table.
- *  
+ *
  *  @param  family  - nft IP family (ip | ip6)
  *  @param  table   - nft table name.
  *  @param  err     - JSON error value.
- *  
+ *
  *  @return JSON nft command or NULL if fail.
  */
 json_t *nft_json_add_table(const char *family, const char *table, json_error_t *err);
 
 /**
  *  Build nft JSON command for add chain.
- *  
+ *
  *  @param  ch_ctx  - chain context struct.
  *  @param  err     - JSON error value.
- *  
+ *
  *  @return JSON nft command or NULL if fail.
  */
 json_t *nft_json_add_chain(chain_ctx *ch_ctx, json_error_t *err);
 
 /**
  *  Build nft JSON statement oifname.
- * 
+ *
  *  @param  oifname - out interface name.
  *  @param  err     - JSON error value.
  *  @return JSON nft command or NULL if fail.
@@ -179,7 +171,7 @@ json_t *nft_json_build_st_oifname(const char *oifname, json_error_t *err);
 
 /**
  *  Build nft JSON statement iifname.
- * 
+ *
  *  @param  iifname - out interface name.
  *  @param  err     - JSON error value.
  *  @return JSON nft statement or NULL if fail.
@@ -188,7 +180,7 @@ json_t *nft_json_build_st_iif(const char *iifname, json_error_t *err);
 
 /**
  *  Build nft JSON statement address.
- * 
+ *
  *  @param  addr_ctx - address context struct.
  *  @param  err     - JSON error value.
  *  @return JSON nft statement or NULL if fail.
@@ -203,7 +195,7 @@ json_t *nft_json_build_st_count();
 
 /**
  *  Build nft JSON statement policy.
- *  
+ *
  *  @param  policy - nft_policies value.
  *  @return JSON nft statement.
  */
@@ -211,7 +203,7 @@ json_t *nft_json_build_st_policy(const char *policy);
 
 /**
  *  Build nft JSON statement NAT.
- * 
+ *
  *  @param  nat_type    - nat_types SNAT, DNAT, masquerade.
  *  @param  addr        - NAT address.
  *  @return JSON nft statement or NULL if fail.
@@ -220,16 +212,17 @@ json_t *nft_json_build_st_nat(uint8_t nat_type, const char *addr, json_error_t *
 
 /**
  *  Build nft JSON ports set.
- *  
+ *
  *  @param  port_begin  - begin port.
  *  @param  port_end    - end port.
  *  @return JSON nft statement or NULL if fail.
  */
-json_t *nft_json_build_ports_set(const int port_begin, const int port_end, json_error_t *err);
+json_t *nft_json_build_ports_set(const int port_begin, const int port_end,
+                                 json_error_t *err);
 
 /**
  *  Build nft JSON statement ports.
- *  
+ *
  *  @param  p_ctx   - ports context struct.
  *  @param  port_end    - end port.
  *  @return JSON nft statement or NULL if fail.
@@ -244,7 +237,8 @@ json_t *nft_json_build_st_ports(const ports_ctx *p_ctx, json_error_t *err);
  *  @param  err     - JSON error value.
  *  @return JSON nft expression or NULL if fail.
  */
-json_t *nft_json_build_expr_msq(const char *oifname, const int count, json_error_t *err);
+json_t *nft_json_build_expr_msq(const char *oifname, const int count,
+                                json_error_t *err);
 
 /**
  *  Build nft JSON exression SNAT.
@@ -254,7 +248,8 @@ json_t *nft_json_build_expr_msq(const char *oifname, const int count, json_error
  *  @param  err     - JSON error value.
  *  @return JSON nft expression or NULL if fail.
  */
-json_t *nft_json_build_expr_snat(const nat_ctx *nat_ctx, const int count, json_error_t *err);
+json_t *nft_json_build_expr_snat(const nat_ctx *nat_ctx, const int count,
+                                 json_error_t *err);
 
 /**
  *  Build nft JSON exression DNAT(PAT).
@@ -282,17 +277,18 @@ json_t *nft_json_build_expr_policy(policy_ctx *pol_ctx, const char *family,
 
 /**
  *  Build nft JSON command (add, delete, replace) rule.
- * 
+ *
  *  @param  rule_ctx - rule context struct.
  *  @param  expr     - rule expression.
  *  @param  err     - JSON error value.
  *  @return JSON nft command or NULL if fail.
  */
-json_t *nft_json_build_rule(const rule_ctx *rule_ctx, json_t *expr, json_error_t *err);
+json_t *nft_json_build_rule(const rule_ctx *rule_ctx, json_t *expr,
+                            json_error_t *err);
 
 /**
  *  Build nft JSON command flush ruleset.
- * 
+ *
  *  @return JSON nft command or NULL if fail.
  */
 json_t *nft_json_build_flush();
@@ -307,7 +303,7 @@ char *nft_json_get_cmd_string(json_t *nft_array);
 
 /**
  *  Dump nft output in to file output.json.
- *  
- *  @param nft - nft context. 
+ *
+ *  @param nft - nft context.
  */
 int nft_json_fprint_ruleset(struct nft_ctx *nft);
