@@ -1,4 +1,4 @@
-#include "../nft_json_api.h"
+#include "../../nft_json_api.h"
 
 int main(int argc, char const *argv[]) {
 	const char *family = "ip";

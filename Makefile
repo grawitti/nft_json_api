@@ -1,22 +1,33 @@
 CC=gcc
 CFLAGS=-DDEBUG -g -ljansson -lnftables
-TARGRT_PATH=bin/
-SRC_PATH=tests/
-SOURCES=$(wildcard tests/*.c)
-TARGETS=$(basename $(SOURCES))
+EXAM_PATH=examples/
+BIN_PATH=bin/
+SRC_PATH=src/
+JSON_PATH=json/
 LIB=nft_json_api
+SOURCES=$(wildcard $(wildcard $(EXAM_PATH)$(SRC_PATH))*.c)
+TARGETS=$(basename $(SOURCES))
 
-.PHONY : all clean
+.PHONY : all clean mkdir
 
 all : $(TARGETS)
 
-$(TARGETS) : mkdir
-	$(CC) $@.c $(CFLAGS) $(LIB).c -o $(TARGRT_PATH)$(notdir $@)
+$(TARGETS) : mkdir $(LIB).a
+	$(CC) $@.c $(CFLAGS) -L. -l$(LIB) -o $(EXAM_PATH)$(BIN_PATH)$(notdir $@)
+
+$(LIB).a : $(LIB).o
+	ar rc lib$@ $(LIB).o
+	ranlib lib$(LIB).a
+
+$(LIB).o :
+	gcc -c $(LIB).c -o $@
 
 mkdir :
-	mkdir bin
-	mkdir json
+	mkdir $(EXAM_PATH)$(BIN_PATH)
+	mkdir $(EXAM_PATH)$(JSON_PATH)
 
 clean :
-	rm -rf bin
-	rm -rf json
+	rm -rf $(EXAM_PATH)$(BIN_PATH)
+	rm -rf $(EXAM_PATH)$(JSON_PATH)
+	rm -r *.o
+	rm -r *.a

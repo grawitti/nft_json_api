@@ -1,4 +1,4 @@
-#include "../nft_json_api.h"
+#include "../../nft_json_api.h"
 
 int main() {
 	json_error_t err;
