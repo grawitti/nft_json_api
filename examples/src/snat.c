@@ -1,5 +1,11 @@
 #include "../../nft_json_api.h"
 
+void perror(const char *err_msg)
+{
+    printf("error: %s\n", err_msg);
+    exit(-1);
+}
+
 int main(int argc, char const **argv) {
 	rule_ctx r_ctx;
 	memset(&r_ctx, 0, sizeof(rule_ctx));
@@ -73,7 +79,7 @@ int main(int argc, char const **argv) {
 	nft_ctx_output_set_json(nft, 1);
 
 #ifdef DEBUG
-	nft_json_fprint_ruleset(nft);
+	nft_json_fprint_ruleset(nft, "../json/output.json");
 #endif // DEBUG
 
 	if (nft_ctx_buffer_output(nft) || nft_run_cmd_from_buffer(nft, list_cmd, 0))

@@ -20,7 +20,7 @@ $(LIB).a : $(LIB).o
 	ranlib lib$(LIB).a
 
 $(LIB).o :
-	gcc -c $(LIB).c -o $@
+	$(CC) $(CFLAGS) -c $(LIB).c -o $@
 
 mkdir :
 	mkdir $(EXAM_PATH)$(BIN_PATH)

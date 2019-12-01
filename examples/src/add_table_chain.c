@@ -1,5 +1,11 @@
 #include "../../nft_json_api.h"
 
+void perror(const char *err_msg)
+{
+    printf("error: %s\n", err_msg);
+    exit(-1);
+}
+
 int main(int argc, char const *argv[]) {
 	chain_ctx *ch_ctx = malloc(sizeof(chain_ctx));
 	if (!ch_ctx)
@@ -37,15 +43,15 @@ int main(int argc, char const *argv[]) {
 	nft_cmd = nft_json_add_table(ch_ctx->family, ch_ctx->table, &err);
 	json_t *nft_array = json_array();
 	if (json_array_append(nft_array, nft_cmd))
-		pfail("cannot append nftables array");
+		perror("cannot append nftables array");
 
 	nft_cmd = nft_json_add_chain(ch_ctx, &err);
 	if (json_array_append(nft_array, nft_cmd))
-		pfail("cannot append nftables array");
+		perror("cannot append nftables array");
 
 	char *list_cmd = nft_json_get_cmd_string(nft_array);
 	if (!list_cmd)
-		pfail("cannot get list nft commands");
+		perror("cannot get list nft commands");
 
 	struct nft_ctx *nft;
 	int rc = 0;

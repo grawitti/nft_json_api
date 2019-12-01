@@ -6,12 +6,6 @@ json_t *pfail(const char *err_msg)
     return NULL;
 }
 
-void perror(const char *err_msg)
-{
-    printf("error: %s\n", err_msg);
-    exit(-1);
-}
-
 int nft_get_output(struct nft_ctx *nft)
 {
     int rc = 0;
@@ -321,12 +315,12 @@ char *nft_json_get_cmd_string(json_t *nft_array)
     json_t *root = json_object();
     json_object_set(root, "nftables", nft_array);
 #ifdef DEBUG
-    json_dump_file(root, "json/input.json", JSON_INDENT(4));
+    json_dump_file(root, "../json/input.json", JSON_INDENT(4));
 #endif // DEBUG
     char *list_cmd = json_dumps(root, 0);
 }
 
-int nft_json_fprint_ruleset(struct nft_ctx *nft)
+int nft_json_fprint_ruleset(struct nft_ctx *nft, const char *out_file)
 {
     if (!nft){
         pfail("nft_ctx is NULL");
@@ -334,7 +328,6 @@ int nft_json_fprint_ruleset(struct nft_ctx *nft)
     }
 
     char *list_cmd = "list chain nat POSTROUTING";
-    const char *out_file = "json/output.json";
 
     nft_ctx_output_set_json(nft, 1);
     if (nft_ctx_buffer_output(nft) || nft_run_cmd_from_buffer(nft, list_cmd, sizeof(list_cmd)))

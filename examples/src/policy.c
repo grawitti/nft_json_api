@@ -1,5 +1,11 @@
 #include "../../nft_json_api.h"
 
+void perror(const char *err_msg)
+{
+    printf("error: %s\n", err_msg);
+    exit(-1);
+}
+
 int main(int argc, char const **argv) {
 	rule_ctx r_ctx;
 	memset(&r_ctx, 0, sizeof(rule_ctx));

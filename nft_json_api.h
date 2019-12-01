@@ -125,13 +125,6 @@ typedef struct nft_json_rule_ctx {
 json_t *pfail(const char *err_msg);
 
 /**
- *  Print error message and exit with code: -1.
- *
- *  @param  err_msg - error message.
- */
-void perror(const char *err_msg);
-
-/**
  *  Print nft output.
  *
  *  @param  nft - nft context.
@@ -306,4 +299,4 @@ char *nft_json_get_cmd_string(json_t *nft_array);
  *
  *  @param nft - nft context.
  */
-int nft_json_fprint_ruleset(struct nft_ctx *nft);
+int nft_json_fprint_ruleset(struct nft_ctx *nft, const char *outfile);
