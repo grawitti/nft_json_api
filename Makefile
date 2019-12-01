@@ -7,6 +7,8 @@ JSON_PATH=json/
 LIB=nft_json_api
 SOURCES=$(wildcard $(wildcard $(EXAM_PATH)$(SRC_PATH))*.c)
 TARGETS=$(basename $(SOURCES))
+INCLUDE_DIR=/usr/include/
+LIB_DIR=/usr/lib/
 
 .PHONY : all clean mkdir
 
@@ -21,6 +23,10 @@ $(LIB).a : $(LIB).o
 
 $(LIB).o :
 	$(CC) $(CFLAGS) -c $(LIB).c -o $@
+
+install : 
+	sudo cp lib$(LIB).a $(LIB_DIR)
+	sudo cp $(LIB).h $(INCLUDE_DIR)
 
 mkdir :
 	mkdir $(EXAM_PATH)$(BIN_PATH)

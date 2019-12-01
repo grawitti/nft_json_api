@@ -1,3 +1,6 @@
+#ifndef NFT_JSON_API
+#define NFT_JSON_API
+
 #include <string.h>
 #include <nftables/libnftables.h>
 #include <jansson.h>
@@ -7,7 +10,6 @@ enum nft_nat_types {
 	NFT_DNAT,
 	NFT_MASQ,
 };
-
 
 #define NFT_POLICY_ACCEPT "accept"
 #define NFT_POLICY_DROP "drop"
@@ -300,3 +302,5 @@ char *nft_json_get_cmd_string(json_t *nft_array);
  *  @param nft - nft context.
  */
 int nft_json_fprint_ruleset(struct nft_ctx *nft, const char *outfile);
+
+#endif // !1NFT_JSON_API
