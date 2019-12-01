@@ -6,15 +6,17 @@ SRC_PATH=src/
 JSON_PATH=json/
 LIB=nft_json_api
 SOURCES=$(wildcard $(wildcard $(EXAM_PATH)$(SRC_PATH))*.c)
-TARGETS=$(basename $(SOURCES))
+EXAMPLES=$(basename $(SOURCES))
 INCLUDE_DIR=/usr/include/
 LIB_DIR=/usr/lib/
 
-.PHONY : all clean mkdir
+.PHONY : all examples clean mkdir
 
-all : $(TARGETS)
+all : $(LIB).a
 
-$(TARGETS) : mkdir $(LIB).a
+examples : $(EXAMPLES)
+
+$(EXAMPLES) : mkdir $(LIB).a
 	$(CC) $@.c $(CFLAGS) -L. -l$(LIB) -o $(EXAM_PATH)$(BIN_PATH)$(notdir $@)
 
 $(LIB).a : $(LIB).o
