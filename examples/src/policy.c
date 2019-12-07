@@ -20,10 +20,17 @@ int main(int argc, char const **argv) {
 	pol_ctx.iifname = "enp6s0";
 
 	pol_ctx.policy = NFT_POLICY_ACCEPT;
-	pol_ctx.dport_ctx.protocol = pol_ctx.sport_ctx.protocol = "tcp";
+	pol_ctx.dport_ctx.protocol = pol_ctx.sport_ctx.protocol = 6;
 
 	switch (argc) {
-	case 10:
+    case 3:
+        pol_ctx.policy = argv[1];
+        if(!(pol_ctx.sport_ctx.protocol = atoi(argv[2])))
+            return -1;
+        pol_ctx.dport_ctx.protocol = pol_ctx.sport_ctx.protocol;
+        break;
+
+    case 10:
 		// if(strcmp(argv[1], "0")) {
 		pol_ctx.saddr_ctx.addr = argv[1];
 		if (!(pol_ctx.saddr_ctx.mask_len = atoi(argv[2])))
@@ -45,9 +52,10 @@ int main(int argc, char const **argv) {
 		r_ctx.ch_ctx.family = argv[1];
 		r_ctx.ch_ctx.table = argv[2];
 		r_ctx.ch_ctx.chain = argv[3];
-		pol_ctx.dport_ctx.protocol = pol_ctx.sport_ctx.protocol = argv[5];
+        if (!(pol_ctx.dport_ctx.protocol = pol_ctx.sport_ctx.protocol = atoi(argv[5])))
+            return -1;
 
-		if (strcmp(argv[1], "0")) {
+        if (strcmp(argv[1], "0")) {
 			pol_ctx.saddr_ctx.addr = argv[6];
 			if (!(pol_ctx.saddr_ctx.mask_len = atoi(argv[7])))
 				return -1;

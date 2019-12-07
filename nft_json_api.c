@@ -168,14 +168,39 @@ json_t *nft_json_build_st_ports(const ports_ctx *p_ctx, json_error_t *err)
 
     json_t *ports_set = nft_json_build_ports_set(p_ctx->port_begin, p_ctx->port_end, err);
 
+    const char *protocol = "";
+    switch (p_ctx->protocol)
+    {
+    case 6:
+        protocol = "tcp";
+        break;
+    case 17:
+        protocol = "udp";
+        break;
+    default:
+        return pfail("protocol for ports may be 6(tcp) or 17(udp)");
+    }
+
     return json_pack_ex(err, 0,
                         "{s{s{s{ss,ss}},so}}",
                         "match",
                         "left",
                         "payload",
-                        "name", p_ctx->protocol,
+                        "name", protocol,
                         "field", xport,
                         "right", ports_set);
+}
+
+json_t *nft_json_build_st_proto(const char *family, const int proto, json_error_t *err)
+{
+    return json_pack_ex(err, 0,
+                        "{s{s{s{ss,ss}},si}}",
+                        "match",
+                        "left",
+                        "payload",
+                        "name", family,
+                        "field", "protocol",
+                        "right", (json_int_t)proto);
 }
 
 json_t *nft_json_build_expr_msq(const char *oifname, const int count, json_error_t *err)
@@ -258,13 +283,47 @@ json_t *nft_json_build_expr_policy(policy_ctx *pol_ctx, const char *family,
         if (json_array_append(nft_expr, nft_json_build_st_addr(&pol_ctx->daddr_ctx, err)))
             return pfail("can't build statement daddr");
 
-    if (pol_ctx->sport_ctx.protocol && pol_ctx->sport_ctx.port_begin > 0 && pol_ctx->sport_ctx.port_end >> 0)
-        if (json_array_append(nft_expr, nft_json_build_st_ports(&pol_ctx->sport_ctx, err)))
-            return pfail("can't build statement sport");
+    switch (pol_ctx->sport_ctx.protocol)
+    {
+    case 6:
+    case 17:
+        if (pol_ctx->sport_ctx.port_begin > 0 && pol_ctx->sport_ctx.port_end >> 0)
+        {
+            if (json_array_append(nft_expr, nft_json_build_st_ports(&pol_ctx->sport_ctx, err)))
+                return pfail("can't build statement sport");
+        }
+        else
+        {
+            if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->sport_ctx.protocol, err)))
+                return pfail("can't build statement protocol");
+        }
+        break;
+    default:
+        if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->sport_ctx.protocol, err)))
+            return pfail("can't build statement protocol");
+        break;
+    }
 
-    if (pol_ctx->dport_ctx.protocol && pol_ctx->dport_ctx.port_begin > 0 && pol_ctx->dport_ctx.port_end >> 0)
-        if (json_array_append(nft_expr, nft_json_build_st_ports(&pol_ctx->dport_ctx, err)))
-            return pfail("can't build statement dport");
+    switch (pol_ctx->dport_ctx.protocol)
+    {
+    case 6:
+    case 17:
+        if (pol_ctx->dport_ctx.port_begin > 0 && pol_ctx->dport_ctx.port_end >> 0)
+        {
+            if (json_array_append(nft_expr, nft_json_build_st_ports(&pol_ctx->dport_ctx, err)))
+                return pfail("can't build statement dport");
+        }
+        else
+        {
+            if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->dport_ctx.protocol, err)))
+                return pfail("can't build statement protocol");
+        }
+        break;
+    default:
+        if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->dport_ctx.protocol, err)))
+            return pfail("can't build statement protocol");
+        break;
+    }
 
     if (count)
         if (json_array_append(nft_expr, nft_json_build_st_count()))
@@ -323,33 +382,37 @@ char *nft_json_get_cmd_string(json_t *nft_array)
 
 int nft_json_fprint_ruleset(struct nft_ctx *nft, const char *out_file)
 {
-    if (!nft){
+    if (!nft)
+    {
         pfail("nft_ctx is NULL");
         return -1;
     }
 
-    char list_cmd[] = "list chain nat POSTROUTING";
+    char list_cmd[] = "list ruleset";
 
     nft_ctx_output_set_json(nft, 1);
     if (nft_ctx_buffer_output(nft) || nft_run_cmd_from_buffer(nft, list_cmd, sizeof(list_cmd)))
         return -1;
 
     const char *output = nft_ctx_get_output_buffer(nft);
-    if(strlen(output))
+    if (strlen(output))
     {
         json_error_t err;
         json_t *root = json_loads(output, 0, &err);
-        if(!root){
+        if (!root)
+        {
             printf(err.text);
             return -1;
         }
 
-        if(json_dump_file(root, out_file, JSON_INDENT(4))){
+        if (json_dump_file(root, out_file, JSON_INDENT(4)))
+        {
             printf("cannot write out_file");
             return -1;
         }
     }
-    else {
+    else
+    {
         printf("output is NULL");
         return -1;
     }

@@ -47,14 +47,13 @@ typedef struct nft_json_chain_ctx {
  *  Ports context.
  *
  *  @property port_type  (uint8_t) define source | destination port.
+ *  @property protocol   (int) protocol.
  *  @property port_begin (int) begin port.
  *  @property port_end   (int) end port.
- *  @property protocol   (const char*) tcp, udp protocol.
  */
 typedef struct nft_json_ports_ctx {
 	uint8_t port_type;
-	int port_begin, port_end;
-	const char *protocol;
+	int protocol, port_begin, port_end;
 } ports_ctx;
 
 /**
@@ -223,6 +222,15 @@ json_t *nft_json_build_ports_set(const int port_begin, const int port_end,
  *  @return JSON nft statement or NULL if fail.
  */
 json_t *nft_json_build_st_ports(const ports_ctx *p_ctx, json_error_t *err);
+
+/**
+ *  Build nft JSON statement protocol.
+ *  
+ *  @param  family  - nft IP family (ip | ip6)
+ *  @param  proto   - ip protocol(0-255).
+ *  @return JSON nft statement or NULL if fail.
+ */
+json_t *nft_json_build_st_proto(const char *family, const int proto, json_error_t *err);
 
 /**
  *  Build nft JSON exression masquerade.

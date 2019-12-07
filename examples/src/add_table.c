@@ -35,7 +35,10 @@ int main(int argc, char const *argv[]) {
 	char *list_cmd = nft_json_get_cmd_string(nft_array);
 
 	nft_ctx_output_set_json(nft, 1);
-	if (rc == 0) {
+
+    nft_json_fprint_ruleset(nft, "../json/output.json");
+
+    if (rc == 0) {
 		if (nft_ctx_buffer_output(nft) || nft_run_cmd_from_buffer(nft, list_cmd, 0))
 			return -1;
 

@@ -26,7 +26,10 @@ int main(int argc, char const **argv) {
 
 	switch (argc) {
 	case 5:
-		p_ctx.protocol = argv[1];
+        if(atoi(argv[1]) == 6 || atoi(argv[1]) == 17)
+            return -1;
+        else
+            p_ctx.protocol = atoi(argv[1]);
 		if (!(p_ctx.port_begin = atoi(argv[2])))
 			return -1;
 		if (!(p_ctx.port_end = atoi(argv[3])))
@@ -38,7 +41,10 @@ int main(int argc, char const **argv) {
 		r_ctx.ch_ctx.table = argv[2];
 		r_ctx.ch_ctx.chain = argv[3];
 		n_ctx.iifname = argv[4];
-		p_ctx.protocol = argv[5];
+        if(atoi(argv[5]) == 6 || atoi(argv[5]) == 17)
+            return -1;
+        else
+            p_ctx.protocol = atoi(argv[5]);
 		if (!(p_ctx.port_begin = atoi(argv[6])))
 			return -1;
 		if (!(p_ctx.port_end = atoi(argv[7])))
