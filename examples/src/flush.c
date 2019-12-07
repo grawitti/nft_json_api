@@ -1,6 +1,6 @@
 #include "../../nft_json_api.h"
 
-int main() {
+int main(void) {
 	json_error_t err;
 	struct nft_ctx *nft;
 	int rc = 0;

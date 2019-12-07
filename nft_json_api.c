@@ -28,7 +28,7 @@ int nft_get_output(struct nft_ctx *nft)
     else
     {
         printf("\nCurrent ruleset is empty.\n");
-        rc - 1;
+        rc = -1;
     }
 
     if (strlen(output))
@@ -104,7 +104,7 @@ json_t *nft_json_build_st_addr(const addr_ctx *addr_ctx, json_error_t *err)
                         "len", addr_ctx->mask_len);
 }
 
-json_t *nft_json_build_st_count()
+json_t *nft_json_build_st_count(void)
 {
     return json_pack("{sn}", "counter");
 }
@@ -146,6 +146,7 @@ json_t *nft_json_build_ports_set(const int port_begin, const int port_end, json_
     if (port_begin < port_end)
         return json_pack_ex(err, 0, "{s[i,i]}", "range",
                             (json_int_t)port_begin, (json_int_t)port_end);
+    return pfail("Unexpected ports values");
 }
 
 json_t *nft_json_build_st_ports(const ports_ctx *p_ctx, json_error_t *err)
@@ -277,7 +278,7 @@ json_t *nft_json_build_expr_policy(policy_ctx *pol_ctx, const char *family,
 
 json_t *nft_json_build_rule(const rule_ctx *rule_ctx, json_t *expr, json_error_t *err)
 {
-    const char *cmd_str;
+    const char *cmd_str = "";
     switch (rule_ctx->nft_cmd)
     {
     case NFT_CMD_ADD:
@@ -305,7 +306,7 @@ json_t *nft_json_build_rule(const rule_ctx *rule_ctx, json_t *expr, json_error_t
                         "handle", rule_ctx->handle);
 }
 
-json_t *nft_json_build_flush()
+json_t *nft_json_build_flush(void)
 {
     return json_pack("{s{sn}}", "flush", "ruleset");
 }
@@ -317,7 +318,7 @@ char *nft_json_get_cmd_string(json_t *nft_array)
 #ifdef DEBUG
     json_dump_file(root, "../json/input.json", JSON_INDENT(4));
 #endif // DEBUG
-    char *list_cmd = json_dumps(root, 0);
+    return json_dumps(root, 0);
 }
 
 int nft_json_fprint_ruleset(struct nft_ctx *nft, const char *out_file)
@@ -327,7 +328,7 @@ int nft_json_fprint_ruleset(struct nft_ctx *nft, const char *out_file)
         return -1;
     }
 
-    char *list_cmd = "list chain nat POSTROUTING";
+    char list_cmd[] = "list chain nat POSTROUTING";
 
     nft_ctx_output_set_json(nft, 1);
     if (nft_ctx_buffer_output(nft) || nft_run_cmd_from_buffer(nft, list_cmd, sizeof(list_cmd)))

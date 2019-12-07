@@ -74,9 +74,10 @@ int main(int argc, char const **argv) {
 	}
 
 	json_t *root = json_object();
-	int i = json_object_set(root, "nftables", jt_nft_array);
+	if(json_object_set(root, "nftables", jt_nft_array))
+        return -1;
 
-	json_dump_file(root, "json/input.json", JSON_INDENT(4));
+    json_dump_file(root, "json/input.json", JSON_INDENT(4));
 
 	char *list_cmd = json_dumps(root, 0);
 

@@ -186,7 +186,7 @@ json_t *nft_json_build_st_addr(const addr_ctx *addr_ctx, json_error_t *err);
  *  Build nft JSON statement counter.
  *  @return JSON nft statement.
  */
-json_t *nft_json_build_st_count();
+json_t *nft_json_build_st_count(void);
 
 /**
  *  Build nft JSON statement policy.
@@ -286,7 +286,7 @@ json_t *nft_json_build_rule(const rule_ctx *rule_ctx, json_t *expr,
  *
  *  @return JSON nft command or NULL if fail.
  */
-json_t *nft_json_build_flush();
+json_t *nft_json_build_flush(void);
 
 /**
  *  Get char string from json_t array nftables.
