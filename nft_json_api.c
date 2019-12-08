@@ -51,13 +51,14 @@ json_t *nft_json_add_table(const char *family, const char *table, json_error_t *
 json_t *nft_json_add_chain(chain_ctx *ch_ctx, json_error_t *err)
 {
     return json_pack_ex(err, 0,
-                        "{s{s{ss,ss,ss,ss,ss,ss}}}",
+                        "{s{s{ss,ss,ss,ss,ss,si,ss}}}",
                         "add", "chain",
                         "family", ch_ctx->family,
                         "table", ch_ctx->table,
                         "name", ch_ctx->chain,
                         "type", ch_ctx->type,
                         "hook", ch_ctx->hook,
+                        "prio", ch_ctx->priority,
                         "policy", ch_ctx->policy);
 }
 

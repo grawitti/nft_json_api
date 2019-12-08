@@ -56,7 +56,7 @@ int main(int argc, char const *argv[]) {
 
 	json_dump_file(root, "json/input.json", JSON_INDENT(4));
 
-	char *list_cmd = json_dumps(root, 0);
+    char *list_cmd = json_dumps(root, 0);
 
 	if (rc == 0) {
 		if (nft_ctx_buffer_output(nft) || nft_run_cmd_from_buffer(nft, list_cmd, 0))
