@@ -13,10 +13,11 @@ int main(int argc, char const *argv[]) {
 	r_ctx->ch_ctx.table = "t1";
 	const char *ifname = "enp6s0";
 	r_ctx->ch_ctx.chain = "POSTROUTING";
-	r_ctx->handle = 0;
-	int rc = 0;
+	r_ctx->handle = 1;
+    r_ctx->comment = "h9m5";
+    int rc = 0;
 
-	switch (argc) {
+    switch (argc) {
 	case 2:
 		ifname = argv[1];
 		break;
