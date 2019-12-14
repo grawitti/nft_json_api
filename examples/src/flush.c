@@ -24,7 +24,7 @@ int main(void) {
 	json_t *root = json_object();
 	json_object_set(root, "nftables", jt_nft_array);
 
-	json_dump_file(root, "json/input.json", JSON_INDENT(4));
+	json_dump_file(root, "../json/input.json", JSON_INDENT(4));
 
 	char *list_cmd = json_dumps(root, 0);
 

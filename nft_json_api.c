@@ -40,84 +40,6 @@ int nft_get_output(struct nft_ctx *nft)
     return rc;
 }
 
-int nft_json_build_list_chain(char *list_cmd, int max_len, const chain_ctx *ch_ctx)
-{
-    if (snprintf(list_cmd, max_len, "list chain %s %s %s", ch_ctx->family, ch_ctx->table, ch_ctx->chain))
-        return 0;
-    return -1;
-
-    // return json_pack_ex(err, 0, "{s{s{ss,ss,ss}}}",
-    //                      "list", "chain", "family", ch_ctx->family,
-    //                      "table", ch_ctx->table,
-    //                      "name", ch_ctx->chain);
-}
-
-json_t *nft_json_extract_array(struct nft_ctx *nft, char *list_cmd)
-{
-    // run nft command
-    if (nft_ctx_buffer_output(nft) || nft_run_cmd_from_buffer(nft, list_cmd, sizeof(list_cmd)))
-        return NULL;
-
-    // Get nft JSON output bufer
-    const char *nft_json_out = nft_ctx_get_output_buffer(nft);
-
-    json_error_t error;
-    // parse JSON output to *root
-    json_t *root = json_loads(nft_json_out, 0, &error);
-    if (!root)
-    {
-        fprintf(stderr, "error: on line %d: %s\n", error.line, error.text);
-        return NULL;
-    }
-
-    // json_dump_file(root, "json/output.json", JSON_INDENT(4));
-
-    json_t *nft_array;
-    // Extract JSON array "nftables" to *nft_array
-    if (json_unpack(root, "{so}", "nftables", &nft_array))
-        return NULL;
-
-    return nft_array;
-}
-
-int nft_json_get_rule_handle(struct nft_ctx *nft, const chain_ctx *ch_ctx, const char *rule_comment, json_error_t *err)
-{
-    if (!nft)
-        return -1;
-
-    int max_len = 40;
-    char list_cmd[max_len];
-
-    if (nft_json_build_list_chain(list_cmd, max_len, ch_ctx))
-        return -1;
-
-    json_t *nft_array = nft_json_extract_array(nft, list_cmd);
-    if (!nft_array)
-        return -1;
-
-    size_t index;
-    json_t *value;
-    int handle = 0;
-    json_array_foreach(nft_array, index, value)
-    {
-        if (!json_unpack_ex(value, err, JSON_VALIDATE_ONLY, "{s{}}", "rule"))
-        {
-            const char *tmp_str = "";
-            json_unpack(value, "{s{ss}}", "rule", "comment", &tmp_str);
-
-            if (!strcmp(tmp_str, rule_comment))
-            {
-                json_unpack(value, "{s{si}}", "rule", "handle", &handle);
-            }
-        }
-    }
-
-    if (handle)
-        return handle;
-    else
-        return -1;
-}
-
 json_t *nft_json_add_table(const char *family, const char *table, json_error_t *err)
 {
     return json_pack_ex(err, 0, "{s{s{ss,ss}}}",
@@ -442,14 +364,13 @@ json_t *nft_json_build_rule(const rule_ctx *rule_ctx, json_t *expr, json_error_t
     }
 
     return json_pack_ex(err, 0,
-                        "{s{s{ss,ss,ss,so,si,ss}}}",
+                        "{s{s{ss,ss,ss,so,si}}}",
                         cmd_str, "rule",
                         "family", rule_ctx->ch_ctx.family,
                         "table", rule_ctx->ch_ctx.table,
                         "chain", rule_ctx->ch_ctx.chain,
                         "expr", expr,
-                        "handle", rule_ctx->handle,
-                        "comment", rule_ctx->comment);
+                        "handle", rule_ctx->handle);
 }
 
 json_t *nft_json_build_flush(void)
@@ -457,57 +378,62 @@ json_t *nft_json_build_flush(void)
     return json_pack("{s{sn}}", "flush", "ruleset");
 }
 
+json_t *nft_json_build_flush_chain(const chain_ctx *ch_ctx, json_error_t *err)
+{
+    return json_pack_ex(err, 0, "{s{s{ss,ss,ss}}}",
+                        "flush", "chain",
+                        "family", ch_ctx->family,
+                        "table", ch_ctx->table,
+                        "name", ch_ctx->chain);
+}
+
 char *nft_json_get_cmd_string(json_t *nft_array)
 {
     json_t *root = json_object();
     json_object_set(root, "nftables", nft_array);
 #ifdef DEBUG
-    json_dump_file(root, "../json/input.json", JSON_INDENT(4));
+    json_dump_file(root, "json/input.json", JSON_INDENT(4));
 #endif // DEBUG
     return json_dumps(root, 0);
-}
-
-int nft_json_fprint_ruleset(struct nft_ctx *nft, const char *out_file)
-{
-    if (!nft)
-    {
-        pfail("nft_ctx is NULL");
-        return -1;
-    }
-
-    char list_cmd[] = "list ruleset";
-
-    nft_ctx_output_set_json(nft, 1);
-    if (nft_ctx_buffer_output(nft) || nft_run_cmd_from_buffer(nft, list_cmd, sizeof(list_cmd)))
-        return -1;
-
-    const char *output = nft_ctx_get_output_buffer(nft);
-    if (strlen(output))
-    {
-        json_error_t err;
-        json_t *root = json_loads(output, 0, &err);
-        if (!root)
-        {
-            printf(err.text);
-            return -1;
-        }
-
-        if (json_dump_file(root, out_file, JSON_INDENT(4)))
-        {
-            printf("cannot write out_file");
-            return -1;
-        }
-    }
-    else
-    {
-        printf("output is NULL");
-        return -1;
-    }
-    return 0;
 }
 
 void nft_json_free(struct nft_ctx *nft)
 {
     nft_ctx_unbuffer_output(nft);
     nft_ctx_free(nft);
+}
+
+int nft_json_run_cmd(json_t *nft_array)
+{
+    char *list_cmd = nft_json_get_cmd_string(nft_array);
+    if (!list_cmd)
+    {
+        printf("Error: list_cmd is empty, cannot get command string from nft_array.\n");
+        return -1;
+    }
+    else
+        json_array_clear(nft_array);
+
+    struct nft_ctx *nft;
+    nft = nft_ctx_new(NFT_CTX_DEFAULT);
+    if (!nft)
+    {
+        printf("Error: cannot create struct nft_ctx.\n");
+        return -1;
+    }
+
+    nft_ctx_output_set_json(nft, 1);
+    if (nft_ctx_buffer_output(nft) || nft_run_cmd_from_buffer(nft, list_cmd, sizeof(list_cmd)))
+    {
+        printf("Error: cannot run nft command.\n");
+        nft_json_free(nft);
+        return -1;
+    }
+
+#ifdef DEBUG
+    nft_get_output(nft);
+#endif // DEBUG
+
+    nft_json_free(nft);
+    return 0;
 }

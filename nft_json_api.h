@@ -109,13 +109,11 @@ typedef struct nft_json_nat_ctx {
  *
  *  @property nft_cmd   (nft_cmds) nft command.
  *  @property handle    (uint8_t) rule handle.
- *  @property comment   (const char*) rule discription.
  *  @property ch_ctx    (chain_ctx) chain context.
  *  @see nft_json_addr_ctx, nft_json_ports_ctx.
  */
 typedef struct nft_json_rule_ctx {
 	uint8_t nft_cmd, handle;
-    const char *comment;
     chain_ctx ch_ctx;
 } rule_ctx;
 
@@ -134,39 +132,6 @@ json_t *pfail(const char *err_msg);
  *  @return 0 if success or -1 if output NULL.
  */
 int nft_get_output(struct nft_ctx *nft);
-
-/**
- *  Build command list chain.
- *
- *  @param list_cmd - destination command string.
- *  @param max_len  - MAX of length command string.
- *  @param  ch_ctx  - chain context struct.
- * 
- *  @return 0 - success or -1 - fail.
- */
-int nft_json_build_list_chain(char *list_cmd, int max_len, const chain_ctx *ch_ctx);
-
-/**
- *  Extract nft_array from nft output.
- *
- *  @param nft      - nft context.
- *  @param list_cmd - list nftables commands.
- * 
- *  @return JSON nft command or NULL if fail.
- */
-json_t *nft_json_extract_array(struct nft_ctx *nft, char *list_cmd);
-
-/**
- *  Get handle by rule comment.
- * 
- *  @param nft      - nft context.
- *  @param ch_ctx   - chain context struct.
- *  @param rule_comment - rule comment.
- *  @param  err     - JSON error value.
- * 
- *  @return handle value or -1 if handle not found.
- */
-int nft_json_get_rule_handle(struct nft_ctx *nft, const chain_ctx *ch_ctx, const char *rule_comment, json_error_t *err);
 
 /**
  *  Build nft JSON command for add table.
@@ -332,6 +297,16 @@ json_t *nft_json_build_rule(const rule_ctx *rule_ctx, json_t *expr,
 json_t *nft_json_build_flush(void);
 
 /**
+ *  Build nft JSON command flush chain.
+ *
+ *  @param  ch_ctx  - chain context struct.
+ *  @param  err     - JSON error value.
+ *
+ *  @return JSON nft command or NULL if fail.
+ */
+json_t *nft_json_build_flush_chain(const chain_ctx *ch_ctx, json_error_t *err);
+
+/**
  *  Get char string from json_t array nftables.
  *
  *  @param  nft_array - JSON array nftables.
@@ -340,17 +315,18 @@ json_t *nft_json_build_flush(void);
 char *nft_json_get_cmd_string(json_t *nft_array);
 
 /**
- *  Dump nft output in to file output.json.
- *
- *  @param nft - nft context.
- */
-int nft_json_fprint_ruleset(struct nft_ctx *nft, const char *outfile);
-
-/**
  *  Free nft context & output buffer.
  *  
  *  @param nft - nft context.
  */
 void nft_json_free(struct nft_ctx *nft);
+
+/**
+ *  Run nftables json connamds from nft_array.
+ *
+ *  @param  nft_array - JSON array nftables.
+ *  @return char string nft JSON command.
+ */
+int nft_json_run_cmd(json_t *nft_array);
 
 #endif // !1NFT_JSON_API
