@@ -13,7 +13,7 @@ int main(int argc, char const **argv) {
 	memset(&n_ctx, 0, sizeof(nat_ctx));
 
 	n_ctx.nat_type = NFT_SNAT;
-	r_ctx.ch_ctx.family = n_ctx.saddr_ctx.family = "ip";
+	r_ctx.ch_ctx.family = "ip";
 
 	switch (argc) {
 	case 7:
@@ -43,8 +43,9 @@ int main(int argc, char const **argv) {
 		printf("Need args: family table chain ifname saddr sa_len snat_addr\n");
 		return -1;
 	}
+    n_ctx.saddr_ctx.family = r_ctx.ch_ctx.family;
 
-	json_error_t err;
+    json_error_t err;
 	json_t *nft_cmd = json_object();
 
 	nft_cmd = nft_json_add_table(r_ctx.ch_ctx.family, r_ctx.ch_ctx.table, &err);

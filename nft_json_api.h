@@ -329,4 +329,8 @@ void nft_json_free(struct nft_ctx *nft);
  */
 int nft_json_run_cmd(json_t *nft_array);
 
+void sprint_addr_ctx(char *res_str, const addr_ctx *a_ctx);
+void sprint_ports_ctx(char *res_str, const ports_ctx *p_ctx);
+void sprint_policy_ctx(char *res_str, const policy_ctx *p_ctx);
+
 #endif // !1NFT_JSON_API

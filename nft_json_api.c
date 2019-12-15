@@ -437,3 +437,28 @@ int nft_json_run_cmd(json_t *nft_array)
     nft_json_free(nft);
     return 0;
 }
+
+void sprint_addr_ctx(char *res_str, const addr_ctx *a_ctx)
+{
+    snprintf(res_str, 256, "{\n\taddr_type: %i\n\tfamily: %s\n\taddr: %s\n\tmask_len: %i\n\t}\n",
+             a_ctx->addr_type, a_ctx->family, a_ctx->addr, a_ctx->mask_len);
+}
+
+void sprint_ports_ctx(char *res_str, const ports_ctx *p_ctx)
+{
+    snprintf(res_str, 256, "{\n\tport_type: %i\n\tprotocol: %i\n\tport_begin: %i\n\tport_end: %i\n\t}\n",
+    p_ctx->port_type, p_ctx->protocol, p_ctx->port_begin, p_ctx->port_end);
+}
+
+void sprint_policy_ctx(char *res_str, const policy_ctx *p_ctx)
+{
+    char saddr[256], daddr[256], sport[256], dport[256];
+    sprint_addr_ctx(saddr, &p_ctx->saddr_ctx);
+    sprint_addr_ctx(daddr, &p_ctx->daddr_ctx);
+    sprint_ports_ctx(sport, &p_ctx->sport_ctx);
+    sprint_ports_ctx(dport, &p_ctx->dport_ctx);
+
+    snprintf(res_str, 1024, "{\n\tpolicy: %s\n\tiifname: %s\n\tsaddr_ctx %s\n\tdaddr_ctx %s\n\tspotr_ctx %s\n\tdport_ctx %s\n}\n",
+             p_ctx->policy, p_ctx->iifname,
+             saddr, daddr, sport, dport);
+}
