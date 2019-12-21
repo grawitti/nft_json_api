@@ -47,5 +47,17 @@ int main(void) {
     sprint_policy_ctx(pol, &pol_ctx);
     printf("policy_ctx %s", pol);
 
+    nat_ctx nat_ctx = {};
+    nat_ctx.oif = "eth0";
+    nat_ctx.iifname = "eth1";
+    nat_ctx.nat_type = NFT_SNAT;
+    nat_ctx.nat_addr = "192.168.123.1";
+    nat_ctx.saddr_ctx = sa_ctx;
+    nat_ctx.daddr_ctx = da_ctx;
+
+    char nat[1024];
+    sprint_nat_ctx(nat, &nat_ctx);
+    printf("nat_ctx %s", nat);
+
     return 0;
 }

@@ -298,13 +298,19 @@ json_t *nft_json_build_expr_policy(policy_ctx *pol_ctx, const char *family,
         }
         else
         {
-            if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->sport_ctx.protocol, err)))
-                return pfail("can't build statement protocol");
+            if (strcmp(family, "ip6"))
+            {
+                if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->sport_ctx.protocol, err)))
+                    return pfail("can't build statement protocol");
+            }
         }
         break;
     default:
-        if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->sport_ctx.protocol, err)))
-            return pfail("can't build statement protocol");
+        if (strcmp(family, "ip6"))
+        {
+            if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->sport_ctx.protocol, err)))
+                return pfail("can't build statement protocol");
+        }
         break;
     }
 
@@ -322,14 +328,20 @@ json_t *nft_json_build_expr_policy(policy_ctx *pol_ctx, const char *family,
         }
         else
         {
-            if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->dport_ctx.protocol, err)))
-                return pfail("can't build statement protocol");
+            if (strcmp(family, "ip6"))
+            {
+                if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->dport_ctx.protocol, err)))
+                    return pfail("can't build statement protocol");
+            }
         }
         break;
 
     default:
-        if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->dport_ctx.protocol, err)))
-            return pfail("can't build statement protocol");
+        if (strcmp(family, "ip6"))
+        {
+            if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->dport_ctx.protocol, err)))
+                return pfail("can't build statement protocol");
+        }
         break;
     }
 
@@ -444,10 +456,21 @@ void sprint_addr_ctx(char *res_str, const addr_ctx *a_ctx)
              a_ctx->addr_type, a_ctx->family, a_ctx->addr, a_ctx->mask_len);
 }
 
+void sprint_nat_ctx(char *res_str, const nat_ctx *n_ctx)
+{
+    char saddr[256], daddr[256];
+    sprint_addr_ctx(saddr, &n_ctx->saddr_ctx);
+    sprint_addr_ctx(daddr, &n_ctx->daddr_ctx);
+
+    snprintf(res_str, 256, "{\n\tnat_type: %i\n\toifname: %s\n\tiifname: %s\n\tnat_addr: %s \
+    \n\tsaddr_ctx %s\n\tdaddr_ctx %s\n\t}\n",
+             n_ctx->nat_type, n_ctx->oif, n_ctx->iifname, n_ctx->nat_addr, saddr, daddr);
+}
+
 void sprint_ports_ctx(char *res_str, const ports_ctx *p_ctx)
 {
     snprintf(res_str, 256, "{\n\tport_type: %i\n\tprotocol: %i\n\tport_begin: %i\n\tport_end: %i\n\t}\n",
-    p_ctx->port_type, p_ctx->protocol, p_ctx->port_begin, p_ctx->port_end);
+             p_ctx->port_type, p_ctx->protocol, p_ctx->port_begin, p_ctx->port_end);
 }
 
 void sprint_policy_ctx(char *res_str, const policy_ctx *p_ctx)

@@ -17,67 +17,67 @@ int main(int argc, char const **argv) {
 	r_ctx.ch_ctx.chain = "FORWARD";
 
 	// PLEASE TEST SUPPORT IIFNAME!!!
-	pol_ctx.iifname = "enp6s0";
+	// pol_ctx.iifname = "enp6s0";
 
 	pol_ctx.policy = NFT_POLICY_ACCEPT;
 	pol_ctx.dport_ctx.protocol = pol_ctx.sport_ctx.protocol = 6;
 
-	switch (argc) {
-    case 3:
-        pol_ctx.policy = argv[1];
-        if(!(pol_ctx.sport_ctx.protocol = atoi(argv[2])))
-            return -1;
-        pol_ctx.dport_ctx.protocol = pol_ctx.sport_ctx.protocol;
-        break;
+	// switch (argc) {
+    // case 3:
+    //     pol_ctx.policy = argv[1];
+    //     if(!(pol_ctx.sport_ctx.protocol = atoi(argv[2])))
+    //         return -1;
+    //     pol_ctx.dport_ctx.protocol = pol_ctx.sport_ctx.protocol;
+    //     break;
 
-    case 10:
-		// if(strcmp(argv[1], "0")) {
-		pol_ctx.saddr_ctx.addr = argv[1];
-		if (!(pol_ctx.saddr_ctx.mask_len = atoi(argv[2])))
-			return -1;
-		// }
-		pol_ctx.sport_ctx.port_begin = atoi(argv[3]);
-		pol_ctx.sport_ctx.port_end = atoi(argv[4]);
-		// if(strcmp(argv[5], "0")){
-		pol_ctx.daddr_ctx.addr = argv[5];
-		if (!(pol_ctx.daddr_ctx.mask_len = atoi(argv[6])))
-			return -1;
-		// }
-		pol_ctx.dport_ctx.port_begin = atoi(argv[7]);
-		pol_ctx.dport_ctx.port_end = atoi(argv[8]);
-		pol_ctx.policy = argv[9];
-		break;
+    // case 10:
+	// 	// if(strcmp(argv[1], "0")) {
+	// 	pol_ctx.saddr_ctx.addr = argv[1];
+	// 	if (!(pol_ctx.saddr_ctx.mask_len = atoi(argv[2])))
+	// 		return -1;
+	// 	// }
+	// 	pol_ctx.sport_ctx.port_begin = atoi(argv[3]);
+	// 	pol_ctx.sport_ctx.port_end = atoi(argv[4]);
+	// 	// if(strcmp(argv[5], "0")){
+	// 	pol_ctx.daddr_ctx.addr = argv[5];
+	// 	if (!(pol_ctx.daddr_ctx.mask_len = atoi(argv[6])))
+	// 		return -1;
+	// 	// }
+	// 	pol_ctx.dport_ctx.port_begin = atoi(argv[7]);
+	// 	pol_ctx.dport_ctx.port_end = atoi(argv[8]);
+	// 	pol_ctx.policy = argv[9];
+	// 	break;
 
-	case 15:
-		r_ctx.ch_ctx.family = argv[1];
-		r_ctx.ch_ctx.table = argv[2];
-		r_ctx.ch_ctx.chain = argv[3];
-        if (!(pol_ctx.dport_ctx.protocol = pol_ctx.sport_ctx.protocol = atoi(argv[5])))
-            return -1;
+	// case 15:
+	// 	r_ctx.ch_ctx.family = argv[1];
+	// 	r_ctx.ch_ctx.table = argv[2];
+	// 	r_ctx.ch_ctx.chain = argv[3];
+    //     if (!(pol_ctx.dport_ctx.protocol = pol_ctx.sport_ctx.protocol = atoi(argv[5])))
+    //         return -1;
 
-        if (strcmp(argv[1], "0")) {
-			pol_ctx.saddr_ctx.addr = argv[6];
-			if (!(pol_ctx.saddr_ctx.mask_len = atoi(argv[7])))
-				return -1;
-		}
-		pol_ctx.sport_ctx.port_begin = atoi(argv[8]);
-		pol_ctx.sport_ctx.port_end = atoi(argv[9]);
-		if (strcmp(argv[5], "0")) {
-			pol_ctx.daddr_ctx.addr = argv[10];
-			if (!(pol_ctx.daddr_ctx.mask_len = atoi(argv[11])))
-				return -1;
-		}
-		pol_ctx.dport_ctx.port_begin = atoi(argv[12]);
-		pol_ctx.dport_ctx.port_end = atoi(argv[13]);
-		pol_ctx.policy = argv[14];
-		break;
+    //     if (strcmp(argv[1], "0")) {
+	// 		pol_ctx.saddr_ctx.addr = argv[6];
+	// 		if (!(pol_ctx.saddr_ctx.mask_len = atoi(argv[7])))
+	// 			return -1;
+	// 	}
+	// 	pol_ctx.sport_ctx.port_begin = atoi(argv[8]);
+	// 	pol_ctx.sport_ctx.port_end = atoi(argv[9]);
+	// 	if (strcmp(argv[5], "0")) {
+	// 		pol_ctx.daddr_ctx.addr = argv[10];
+	// 		if (!(pol_ctx.daddr_ctx.mask_len = atoi(argv[11])))
+	// 			return -1;
+	// 	}
+	// 	pol_ctx.dport_ctx.port_begin = atoi(argv[12]);
+	// 	pol_ctx.dport_ctx.port_end = atoi(argv[13]);
+	// 	pol_ctx.policy = argv[14];
+	// 	break;
 
-	default:
-		printf("Need args: family table chain ifname protocol saddr sa_len "
-		       "sport_begin sport end daddr_addr da_len dport_begin dport_end "
-		       "policy\n");
-		return -1;
-	}
+	// default:
+	// 	printf("Need args: family table chain ifname protocol saddr sa_len "
+	// 	       "sport_begin sport end daddr_addr da_len dport_begin dport_end "
+	// 	       "policy\n");
+	// 	return -1;
+	// }
 
 	struct nft_ctx *nft;
 	int rc = 0;
