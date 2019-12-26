@@ -326,22 +326,22 @@ json_t *nft_json_build_expr_policy(policy_ctx *pol_ctx, const char *family,
             if (json_array_append(nft_expr, nft_json_build_st_ports(&pol_ctx->dport_ctx, err)))
                 return pfail("can't build statement dport");
         }
-        else
-        {
-            if (strcmp(family, "ip6"))
-            {
-                if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->dport_ctx.protocol, err)))
-                    return pfail("can't build statement protocol");
-            }
-        }
+        // else
+        // {
+        //     if (strcmp(family, "ip6"))
+        //     {
+        //         if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->dport_ctx.protocol, err)))
+        //             return pfail("can't build statement protocol");
+        //     }
+        // }
         break;
 
     default:
-        if (strcmp(family, "ip6"))
-        {
-            if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->dport_ctx.protocol, err)))
-                return pfail("can't build statement protocol");
-        }
+        // if (strcmp(family, "ip6"))
+        // {
+        //     if (json_array_append(nft_expr, nft_json_build_st_proto(family, pol_ctx->dport_ctx.protocol, err)))
+        //         return pfail("can't build statement protocol");
+        // }
         break;
     }
 
