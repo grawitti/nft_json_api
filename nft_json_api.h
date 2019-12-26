@@ -329,9 +329,36 @@ void nft_json_free(struct nft_ctx *nft);
  */
 int nft_json_run_cmd(json_t *nft_array);
 
+/**
+ *  Build the string of the displayed address context.
+ *
+ *  @param res_str  - the destination string.
+ *  @param a_ctx    - the struct of address context.
+ */
 void sprint_addr_ctx(char *res_str, const addr_ctx *a_ctx);
+
+/**
+ *  Build the string of the displayed NAT context.
+ *
+ *  @param res_str  - the destination string.
+ *  @param n_ctx    - the struct of NAT context.
+ */
 void sprint_nat_ctx(char *res_str, const nat_ctx *n_ctx);
+
+/**
+ *  Build the string of the displayed ports context.
+ *
+ *  @param res_str  - the destination string.
+ *  @param p_ctx    - the struct of ports context.
+ */
 void sprint_ports_ctx(char *res_str, const ports_ctx *p_ctx);
+
+/**
+ *  Build the string of the displayed policy context.
+ *
+ *  @param res_str  - the destination string.
+ *  @param p_ctx    - the struct of policy context.
+ */
 void sprint_policy_ctx(char *res_str, const policy_ctx *p_ctx);
 
 #endif // !1NFT_JSON_API
