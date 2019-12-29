@@ -70,6 +70,14 @@ json_t *nft_json_build_st_oifname(const char *oifname, json_error_t *err)
                         "right", oifname);
 }
 
+json_t *nft_json_build_st_oif(const char *oif, json_error_t *err)
+{
+    return json_pack_ex(err, 0, "{s{s{ss},ss}}",
+                        "match", "left",
+                        "meta", "oif",
+                        "right", oif);
+}
+
 json_t *nft_json_build_st_iif(const char *iifname, json_error_t *err)
 {
     return json_pack_ex(err, 0, "{s{s{ss},ss}}",
@@ -142,11 +150,11 @@ json_t *nft_json_build_ports_set(const int port_begin, const int port_end, json_
         pfail("port_begin must be > port_end or 0.");
 
     if (port_begin == port_end)
-        return json_pack_ex(err, 0, "i", (json_int_t)port_begin);
+        return json_pack_ex(err, 0, "i", port_begin);
 
     if (port_begin < port_end)
         return json_pack_ex(err, 0, "{s[i,i]}", "range",
-                            (json_int_t)port_begin, (json_int_t)port_end);
+                            port_begin, port_end);
     return pfail("Unexpected ports values");
 }
 
@@ -201,7 +209,7 @@ json_t *nft_json_build_st_proto(const char *family, const int proto, json_error_
                         "payload",
                         "name", family,
                         "field", "protocol",
-                        "right", (json_int_t)proto);
+                        "right", proto);
 }
 
 json_t *nft_json_build_expr_msq(const char *oifname, const int count, json_error_t *err)
@@ -228,7 +236,7 @@ json_t *nft_json_build_expr_snat(const nat_ctx *nat_ctx, const int count, json_e
     if (json_array_append(nft_expr, nft_json_build_st_addr(&nat_ctx->saddr_ctx, err)))
         return pfail("can't build statement saddr");
 
-    if (json_array_append(nft_expr, nft_json_build_st_oifname(nat_ctx->oif, err)))
+    if (json_array_append(nft_expr, nft_json_build_st_oif(nat_ctx->oif, err)))
         return pfail("can't build statement oif");
 
     if (count)

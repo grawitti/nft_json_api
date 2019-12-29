@@ -164,6 +164,15 @@ json_t *nft_json_add_chain(chain_ctx *ch_ctx, json_error_t *err);
 json_t *nft_json_build_st_oifname(const char *oifname, json_error_t *err);
 
 /**
+ *  Build nft JSON statement oifname.
+ *
+ *  @param  oif     - out interface name.
+ *  @param  err     - JSON error value.
+ *  @return JSON nft command or NULL if fail.
+ */
+json_t *nft_json_build_st_oif(const char *oif, json_error_t *err);
+
+/**
  *  Build nft JSON statement iifname.
  *
  *  @param  iifname - out interface name.
